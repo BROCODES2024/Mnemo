@@ -1,17 +1,19 @@
-import mongoose, { Schema, Types, model } from "mongoose";
-import dotenv from "dotenv";
+// src/models/db.ts
 
-dotenv.config();
+import mongoose, { Schema, model } from "mongoose";
+import { env } from "../config/env.js"; // Import validated env
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.db_url as string);
+    await mongoose.connect(env.DB_URL);
     console.log("✅ MongoDB connected");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
     process.exit(1);
   }
 };
+
+// --- Your UserSchema, ContentSchema, and LinkShare schemas remain the same ---
 
 const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },
@@ -23,19 +25,17 @@ const ContentSchema = new Schema({
   link: String,
   tags: [{ type: mongoose.Types.ObjectId, ref: "Tag" }],
   type: String,
-  userId: [{ type: mongoose.Types.ObjectId, ref: "User", required: true }],
+  userId: { type: mongoose.Types.ObjectId, ref: "User", required: true },
 });
 
 const LinkShare = new Schema({
   hash: String,
-  userId: [
-    {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-      required: true,
-      unique: true,
-    },
-  ],
+  userId: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true,
+  },
 });
 
 export const UserModel = model("User", UserSchema);
