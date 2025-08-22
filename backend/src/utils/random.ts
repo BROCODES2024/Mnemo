@@ -1,5 +1,3 @@
-// src/utils/random.ts
-
 import crypto from "crypto";
 
 export const random = (length = 8) => {

@@ -1,5 +1,3 @@
-// src/routes/publicRoutes.ts
-
 import { Router } from "express";
 import { getPublicContent } from "../controllers/contentController.js";
 

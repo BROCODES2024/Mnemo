@@ -1,7 +1,5 @@
-// src/middleware/errorMiddleware.ts
-
 import { NextFunction, Request, Response } from "express";
-import { ZodError, ZodIssue } from "zod"; // <-- Import ZodIssue
+import { ZodError, ZodIssue } from "zod";
 
 export const errorMiddleware = (
   err: Error,
@@ -14,7 +12,6 @@ export const errorMiddleware = (
   if (err instanceof ZodError) {
     return res.status(400).json({
       message: "Invalid input",
-      // Change err.errors to err.issues and type the parameter 'e'
       errors: err.issues.map((e: ZodIssue) => ({
         path: e.path,
         message: e.message,

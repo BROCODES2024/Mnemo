@@ -1,5 +1,3 @@
-// src/controllers/userController.ts
-
 import { Request, Response } from "express";
 import { z } from "zod";
 import bcrypt from "bcrypt";
@@ -15,7 +13,7 @@ const signupSchema = z.object({
 export const signup = async (req: Request, res: Response) => {
   const { username, password } = signupSchema.parse(req.body);
 
-  const salt = await bcrypt.genSalt(10); // Increased salt rounds
+  const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
   await UserModel.create({

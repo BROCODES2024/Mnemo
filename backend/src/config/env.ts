@@ -1,5 +1,3 @@
-// src/config/env.ts
-
 import dotenv from "dotenv";
 import { z } from "zod";
 
@@ -11,5 +9,4 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(1, "JWT secret is required"),
 });
 
-// Validate and export the environment variables
 export const env = envSchema.parse(process.env);

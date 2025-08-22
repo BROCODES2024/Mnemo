@@ -1,7 +1,5 @@
-// src/models/db.ts
-
 import mongoose, { Schema, model } from "mongoose";
-import { env } from "../config/env.js"; // Import validated env
+import { env } from "../config/env.js";
 
 export const connectDB = async () => {
   try {
@@ -12,8 +10,6 @@ export const connectDB = async () => {
     process.exit(1);
   }
 };
-
-// --- Your UserSchema, ContentSchema, and LinkShare schemas remain the same ---
 
 const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },

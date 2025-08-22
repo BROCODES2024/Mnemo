@@ -1,12 +1,9 @@
-// src/routes/contentRoutes.ts
-
 import { Router } from "express";
 import * as contentController from "../controllers/contentController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-// Protected routes
 router.use(authMiddleware);
 
 router

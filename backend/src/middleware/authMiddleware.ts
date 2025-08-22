@@ -1,5 +1,3 @@
-// src/middleware/authMiddleware.ts
-
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
@@ -26,7 +24,7 @@ export const authMiddleware = (
       return res.status(403).json({ message: "Invalid token payload" });
     }
 
-    req.userId = decoded.id; // No more @ts-ignore!
+    req.userId = decoded.id;
     next();
   } catch (err) {
     return res.status(403).json({ message: "Invalid or expired token" });

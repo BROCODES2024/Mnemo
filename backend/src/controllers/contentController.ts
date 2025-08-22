@@ -1,10 +1,8 @@
-// src/controllers/contentController.ts
 import { Request, Response } from "express";
 import { z } from "zod";
 import { ContentModel, LinkModel, UserModel } from "../models/db.js";
 import { random } from "../utils/random.js"; // A simple utility
 
-// Create content
 const addContentSchema = z.object({
   link: z.string().url(),
   type: z.string(),
@@ -15,13 +13,11 @@ export const addContent = async (req: Request, res: Response) => {
   res.status(201).json({ msg: "Content added" });
 };
 
-// Get all content for a user
 export const getContent = async (req: Request, res: Response) => {
   const content = await ContentModel.find({ userId: req.userId });
   res.status(200).json({ content });
 };
 
-// Delete content
 const deleteContentSchema = z.object({
   contentId: z
     .string()
@@ -41,7 +37,6 @@ export const deleteContent = async (req: Request, res: Response) => {
   res.status(200).json({ msg: "Content deleted" });
 };
 
-// Create or remove a share link
 const shareContentSchema = z.object({ share: z.boolean() });
 export const manageShareLink = async (req: Request, res: Response) => {
   const { share } = shareContentSchema.parse(req.body);
@@ -61,7 +56,6 @@ export const manageShareLink = async (req: Request, res: Response) => {
   }
 };
 
-// Get content via public share link
 export const getPublicContent = async (req: Request, res: Response) => {
   const { shareLink } = req.params;
   const link = await LinkModel.findOne({ hash: shareLink });
