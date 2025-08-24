@@ -14,7 +14,26 @@ export const addContent = async (req: Request, res: Response) => {
 };
 
 export const getContent = async (req: Request, res: Response) => {
-  const content = await ContentModel.find({ userId: req.userId });
+  /**
+   * Retrieves all content documents associated with the authenticated user from the database,
+   * and populates the `userId` field with the corresponding user document.
+   *
+   * @remarks
+   * This query filters the `ContentModel` collection by the `userId` property, which is expected
+   * to be available on the `req` object (typically set by authentication middleware). The `.populate("userId")`
+   * call replaces the `userId` reference in each content document with the full user document.
+   *
+   * @returns A promise that resolves to an array of content documents with populated user information.
+   */
+  const content = await ContentModel.find({ userId: req.userId }).populate(
+    "userId"
+  );
+  //if we populate with "username", we can return the username directly but it might return password as well
+  // to avoid this we can use select:false in the schema
+  //const UserSchema = new Schema({
+  // username: { type: String, unique: true, required: true },
+  // password: { type: String, required: true, select: false },
+  // });
   res.status(200).json({ content });
 };
 

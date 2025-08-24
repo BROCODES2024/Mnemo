@@ -13,7 +13,7 @@ export const connectDB = async () => {
 
 const UserSchema = new Schema({
   username: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, select: false },
 });
 
 const ContentSchema = new Schema({
