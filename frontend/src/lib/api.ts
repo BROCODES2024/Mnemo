@@ -1,21 +1,38 @@
-// Path: frontend/src/lib/api.ts
 import axios from "axios";
-import { useAuthStore } from "../store/auth";
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1", // Make sure your backend runs on this port
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// Add a request interceptor to include the token
+// Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = useAuthStore.getState().token;
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // Token is invalid or expired
+      localStorage.removeItem("token");
+      window.location.href = "/auth";
+    }
     return Promise.reject(error);
   }
 );

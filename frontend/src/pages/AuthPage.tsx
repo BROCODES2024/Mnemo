@@ -1,140 +1,181 @@
-// Path: frontend/src/pages/AuthPage.tsx
-import { useState } from "react";
+// src/pages/AuthPage.tsx
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useAuthStore } from "../store/auth";
+import { Button } from "../components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import api from "@/lib/api";
-import { useAuthStore } from "@/store/auth";
-import { toast } from "sonner";
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 
-export function AuthPage() {
+export const AuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const setToken = useAuthStore((state) => state.setToken);
+  const { login, signup, isAuthenticated, isLoading, error, clearError } =
+    useAuthStore();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const response = await api.post("/users/signin", { username, password });
-      setToken(response.data.token);
-      toast.success("Login successful!");
+  // Redirect the user to the homepage if they are already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.response?.data?.msg || "Failed to sign in.");
-    } finally {
-      setIsLoading(false);
     }
+  }, [isAuthenticated, navigate]);
+
+  // Clears form fields and errors when switching between Login and Sign Up tabs
+  const handleTabChange = () => {
+    setUsername("");
+    setPassword("");
+    clearError();
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  // Handles form submission for both login and signup
+  const handleSubmit = async (
+    action: "login" | "signup",
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
-    setIsLoading(true);
+    if (!username || !password) {
+      toast.error("Please fill in both username and password.");
+      return;
+    }
+
     try {
-      await api.post("/users/signup", { username, password });
-      toast.success("Account created! Please sign in.");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to sign up.");
-    } finally {
-      setIsLoading(false);
+      if (action === "login") {
+        await login(username, password);
+      } else {
+        await signup(username, password);
+      }
+      toast.success(
+        action === "login" ? "Logged in successfully!" : "Account created!"
+      );
+      navigate("/"); // Navigate to home on success
+    } catch (err) {
+      // The error is set in the auth store; show it in a toast for immediate feedback.
+      const latestError = useAuthStore.getState().error;
+      toast.error(latestError || "An unexpected error occurred.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Tabs defaultValue="signin" className="w-[400px]">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Tabs
+        defaultValue="login"
+        className="w-[400px]"
+        onValueChange={handleTabChange}
+      >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="signin">Sign In</TabsTrigger>
+          <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
         </TabsList>
-        <TabsContent value="signin">
+
+        {/* Login Form */}
+        <TabsContent value="login">
           <Card>
-            <CardHeader>
-              <CardTitle>Sign In</CardTitle>
-              <CardDescription>
-                Enter your credentials to access your Second Brain.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSignIn}>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-username">Username</Label>
-                    <Input
-                      id="signin-username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
-                    <Input
-                      id="signin-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Signing In..." : "Sign In"}
-                  </Button>
+            <form onSubmit={(e) => handleSubmit("login", e)}>
+              <CardHeader>
+                <CardTitle>Welcome Back</CardTitle>
+                <CardDescription>
+                  Enter your credentials to access your account.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="login-username">Username</Label>
+                  <Input
+                    id="login-username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="e.g. johndoe"
+                    required
+                    autoComplete="username"
+                  />
                 </div>
-              </form>
-            </CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">Password</Label>
+                  <Input
+                    id="login-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+                {error && (
+                  <p className="text-sm font-medium text-red-500">{error}</p>
+                )}
+              </CardContent>
+              <CardFooter>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Logging in..." : "Log In"}
+                </Button>
+              </CardFooter>
+            </form>
           </Card>
         </TabsContent>
+
+        {/* Sign Up Form */}
         <TabsContent value="signup">
           <Card>
-            <CardHeader>
-              <CardTitle>Sign Up</CardTitle>
-              <CardDescription>
-                Create a new account to start organizing your thoughts.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSignUp}>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-username">Username</Label>
-                    <Input
-                      id="signup-username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Creating Account..." : "Create Account"}
-                  </Button>
+            <form onSubmit={(e) => handleSubmit("signup", e)}>
+              <CardHeader>
+                <CardTitle>Create an Account</CardTitle>
+                <CardDescription>
+                  Enter a username and password to get started.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-username">Username</Label>
+                  <Input
+                    id="signup-username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Choose a username"
+                    required
+                    autoComplete="username"
+                  />
                 </div>
-              </form>
-            </CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password">Password</Label>
+                  <Input
+                    id="signup-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Choose a strong password"
+                    required
+                    autoComplete="new-password"
+                  />
+                </div>
+                {error && (
+                  <p className="text-sm font-medium text-red-500">{error}</p>
+                )}
+              </CardContent>
+              <CardFooter>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Creating Account..." : "Sign Up"}
+                </Button>
+              </CardFooter>
+            </form>
           </Card>
         </TabsContent>
       </Tabs>
     </div>
   );
-}
+};

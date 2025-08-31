@@ -1,28 +1,29 @@
-// Path: frontend/src/App.tsx
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+// src/App.tsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "./components/ui/sonner";
 import { HomePage } from "./pages/HomePage";
 import { AuthPage } from "./pages/AuthPage";
-import { useAuthStore } from "./store/auth";
-import { Toaster } from "@/components/ui/sonner";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { PublicRoute } from "./components/PublicRoute";
 
 function App() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={isAuthenticated ? <HomePage /> : <Navigate to="/auth" />}
-          />
-          <Route
-            path="/auth"
-            element={!isAuthenticated ? <AuthPage /> : <Navigate to="/" />}
-          />
+          {/* Public routes accessible only when logged out */}
+          <Route element={<PublicRoute />}>
+            <Route path="/auth" element={<AuthPage />} />
+          </Route>
+
+          {/* Protected routes accessible only when logged in */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<HomePage />} />
+            {/* You can add more protected routes here */}
+          </Route>
         </Routes>
       </BrowserRouter>
-      <Toaster richColors />
+      <Toaster richColors position="top-right" />
     </>
   );
 }
