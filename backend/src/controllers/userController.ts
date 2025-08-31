@@ -32,7 +32,8 @@ const signinSchema = z.object({
 export const signin = async (req: Request, res: Response) => {
   const { username, password } = signinSchema.parse(req.body);
 
-  const user = await UserModel.findOne({ username });
+  // FIX: Explicitly select the password field which is excluded by default
+  const user = await UserModel.findOne({ username }).select("+password");
   if (!user) {
     return res.status(404).json({ msg: "User not found" });
   }
