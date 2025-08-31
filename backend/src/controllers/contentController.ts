@@ -1,49 +1,39 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { ContentModel, LinkModel, UserModel } from "../models/db.js";
-import { random } from "../utils/random.js"; // A simple utility
+import { random } from "../utils/random.js";
 
+// UPDATED schema for adding content
 const addContentSchema = z.object({
-  link: z.string().url(),
-  type: z.string(),
+  title: z.string().min(1, "Title is required"),
+  body: z.union([z.string(), z.array(z.string())]),
+  type: z.string().min(1, "Type is required"),
+  tags: z.array(z.string()).optional(),
 });
+
 export const addContent = async (req: Request, res: Response) => {
-  const { link, type } = addContentSchema.parse(req.body);
-  await ContentModel.create({ link, type, userId: req.userId });
-  res.status(201).json({ msg: "Content added" });
+  const { title, body, type, tags } = addContentSchema.parse(req.body);
+  const newContent = await ContentModel.create({
+    title,
+    body,
+    type,
+    tags,
+    userId: req.userId,
+  });
+  res.status(201).json({ msg: "Content added", content: newContent });
 };
 
 export const getContent = async (req: Request, res: Response) => {
-  /**
-   * Retrieves all content documents associated with the authenticated user from the database,
-   * and populates the `userId` field with the corresponding user document.
-   *
-   * @remarks
-   * This query filters the `ContentModel` collection by the `userId` property, which is expected
-   * to be available on the `req` object (typically set by authentication middleware). The `.populate("userId")`
-   * call replaces the `userId` reference in each content document with the full user document.
-   *
-   * @returns A promise that resolves to an array of content documents with populated user information.
-   */
-  const content = await ContentModel.find({ userId: req.userId }).populate(
-    "userId"
-  );
-  //if we populate with "username", we can return the username directly but it might return password as well
-  // to avoid this we can use select:false in the schema
-  //const UserSchema = new Schema({
-  // username: { type: String, unique: true, required: true },
-  // password: { type: String, required: true, select: false },
-  // });
+  // Sort by newest first
+  const content = await ContentModel.find({ userId: req.userId }).sort({
+    createdAt: -1,
+  });
   res.status(200).json({ content });
 };
 
-const deleteContentSchema = z.object({
-  contentId: z
-    .string()
-    .refine((val) => /^[0-9a-fA-F]{24}$/.test(val), "Invalid Object ID"),
-});
+// UPDATED to get contentId from params
 export const deleteContent = async (req: Request, res: Response) => {
-  const { contentId } = deleteContentSchema.parse(req.body);
+  const { contentId } = req.params; // Get ID from URL parameters
   const result = await ContentModel.deleteOne({
     _id: contentId,
     userId: req.userId,
@@ -56,6 +46,7 @@ export const deleteContent = async (req: Request, res: Response) => {
   res.status(200).json({ msg: "Content deleted" });
 };
 
+// ... (manageShareLink and getPublicContent remain the same) ...
 const shareContentSchema = z.object({ share: z.boolean() });
 export const manageShareLink = async (req: Request, res: Response) => {
   const { share } = shareContentSchema.parse(req.body);

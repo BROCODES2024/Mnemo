@@ -9,8 +9,10 @@ router.use(authMiddleware);
 router
   .route("/")
   .get(contentController.getContent)
-  .post(contentController.addContent)
-  .delete(contentController.deleteContent);
+  .post(contentController.addContent);
+
+// UPDATED route for deleting content
+router.delete("/:contentId", contentController.deleteContent);
 
 router.post("/share", contentController.manageShareLink);
 
