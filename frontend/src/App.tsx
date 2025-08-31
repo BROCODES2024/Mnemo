@@ -1,23 +1,29 @@
-import { useEffect } from "react";
-import { HomePage } from "@/pages/HomePage";
-import { AuthPage } from "@/pages/AuthPage";
-import { useAuthStore } from "@/store/auth";
+// Path: frontend/src/App.tsx
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HomePage } from "./pages/HomePage";
+import { AuthPage } from "./pages/AuthPage";
+import { useAuthStore } from "./store/auth";
+import { Toaster } from "@/components/ui/sonner";
 
 function App() {
-  const { token, setToken } = useAuthStore();
-
-  useEffect(() => {
-    // On initial load, check if a token exists in localStorage
-    const storedToken = localStorage.getItem("mnemo-token");
-    if (storedToken) {
-      setToken(storedToken);
-    }
-  }, [setToken]);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return (
-    <main className="dark bg-background text-foreground min-h-screen flex flex-col items-center justify-center p-4">
-      {token ? <HomePage /> : <AuthPage />}
-    </main>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={isAuthenticated ? <HomePage /> : <Navigate to="/auth" />}
+          />
+          <Route
+            path="/auth"
+            element={!isAuthenticated ? <AuthPage /> : <Navigate to="/" />}
+          />
+        </Routes>
+      </BrowserRouter>
+      <Toaster richColors />
+    </>
   );
 }
 
