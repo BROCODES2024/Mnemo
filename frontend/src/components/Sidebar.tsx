@@ -15,10 +15,10 @@ export const Sidebar: React.FC = () => {
   const { selectedType, filterByType } = useContentStore();
 
   return (
-    <div className="w-64 h-screen bg-gray-50 border-r border-gray-200 p-4">
+    <div className="w-64 h-screen bg-background border-r border-border p-4">
       <div className="flex items-center gap-2 mb-8">
-        <Brain className="h-8 w-8 text-indigo-600" />
-        <span className="text-xl font-semibold text-gray-800">Mnemo</span>
+        <Brain className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+        <span className="text-xl font-semibold text-foreground">Mnemo</span>
       </div>
 
       <nav className="space-y-1">
@@ -31,8 +31,8 @@ export const Sidebar: React.FC = () => {
               key={item.id}
               onClick={() => filterByType(item.type)}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors",
-                isActive && "bg-gray-100 text-indigo-600"
+                "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-foreground hover:bg-muted transition-colors",
+                isActive && "bg-muted text-indigo-600 dark:text-indigo-400"
               )}
             >
               <Icon className="h-5 w-5" />

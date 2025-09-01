@@ -35,6 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../components/ui/alert-dialog";
+import { ThemeToggle } from "../components/ui/ThemeToggle";
 
 export const HomePage: React.FC = () => {
   const {
@@ -145,19 +146,19 @@ export const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-background">
       <Sidebar />
 
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="border-b border-gray-200 px-8 py-4">
+        <header className="border-b border-border px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold text-gray-800">
+              <h1 className="text-2xl font-semibold text-foreground">
                 {getPageTitle()}
               </h1>
               {filteredContents.length > 0 && (
-                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
                   {filteredContents.length}{" "}
                   {filteredContents.length === 1 ? "item" : "items"}
                 </span>
@@ -166,7 +167,7 @@ export const HomePage: React.FC = () => {
 
             <div className="flex items-center gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Search notes..."
@@ -192,18 +193,20 @@ export const HomePage: React.FC = () => {
 
               <Button
                 onClick={() => setShowAddDialog(true)}
-                className="gap-2 bg-indigo-600 hover:bg-indigo-700"
+                className="gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
               >
                 <Plus className="h-4 w-4" />
                 Add Content
               </Button>
+
+              <ThemeToggle />
 
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleLogout}
                 title="Logout"
-                className="hover:bg-gray-100"
+                className="hover:bg-muted"
               >
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -211,7 +214,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           {user && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Welcome back, <span className="font-medium">{user.username}</span>
             </p>
           )}
@@ -221,13 +224,15 @@ export const HomePage: React.FC = () => {
         <main className="flex-1 overflow-auto p-8">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center h-64">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-4" />
-              <div className="text-gray-500">Loading your content...</div>
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400 mb-4" />
+              <div className="text-muted-foreground">
+                Loading your content...
+              </div>
             </div>
           ) : filteredContents.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64">
-              <Brain className="h-16 w-16 text-gray-300 mb-4" />
-              <div className="text-gray-500 text-center">
+              <Brain className="h-16 w-16 text-muted mb-4" />
+              <div className="text-muted-foreground text-center">
                 <p className="text-xl mb-2">
                   {searchQuery ? "No matching content found" : "No content yet"}
                 </p>
@@ -281,7 +286,7 @@ export const HomePage: React.FC = () => {
             <AlertDialogAction
               onClick={handleConfirmDelete}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
             >
               {isDeleting ? (
                 <>
@@ -325,8 +330,8 @@ export const HomePage: React.FC = () => {
                 </Button>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-sm text-blue-800">
+              <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
                   <strong>Note:</strong> This link provides read-only access to
                   your content. Viewers cannot edit or delete your notes.
                 </p>
@@ -334,7 +339,7 @@ export const HomePage: React.FC = () => {
             </div>
           ) : (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           )}
 

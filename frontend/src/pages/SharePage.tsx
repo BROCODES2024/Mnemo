@@ -1,11 +1,11 @@
 // src/pages/SharePage.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Brain, Loader2, Home, AlertCircle } from "lucide-react";
+import { Brain, Loader2, Home, AlertCircle, Search } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
-import { Search } from "lucide-react";
+import { ThemeToggle } from "../components/ui/ThemeToggle";
 import api from "../lib/api";
 import { format } from "date-fns";
 import {
@@ -118,17 +118,19 @@ export const SharePage: React.FC = () => {
 
   const renderBody = (content: SharedContent) => {
     if (typeof content.body === "string") {
-      return <p className="text-gray-600 line-clamp-3">{content.body}</p>;
+      return (
+        <p className="text-muted-foreground line-clamp-3">{content.body}</p>
+      );
     } else if (Array.isArray(content.body)) {
       return (
-        <ul className="list-disc list-inside text-gray-600 space-y-1">
+        <ul className="list-disc list-inside text-muted-foreground space-y-1">
           {content.body.slice(0, 3).map((item, idx) => (
             <li key={idx} className="line-clamp-1">
               {item}
             </li>
           ))}
           {content.body.length > 3 && (
-            <li className="text-gray-400">
+            <li className="text-muted">
               ...and {content.body.length - 3} more
             </li>
           )}
@@ -146,10 +148,10 @@ export const SharePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-indigo-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading shared brain...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading shared brain...</p>
         </div>
       </div>
     );
@@ -157,13 +159,13 @@ export const SharePage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center max-w-md">
           <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+          <h2 className="text-2xl font-semibold text-foreground mb-2">
             Oops! Something went wrong
           </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <p className="text-muted-foreground mb-6">{error}</p>
           <Link to="/auth">
             <Button variant="outline" className="gap-2">
               <Home className="h-4 w-4" />
@@ -180,20 +182,25 @@ export const SharePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
+      {/* Theme Toggle - Positioned at top right */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-card border-b border-border sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Brain className="h-8 w-8 text-indigo-600" />
+              <Brain className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
               <div>
-                <h1 className="text-xl font-semibold text-gray-800">
+                <h1 className="text-xl font-semibold text-foreground">
                   {data.username}'s Second Brain
                 </h1>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {data?.contents?.length ?? 0} shared
-                  {(data?.contents?.length ?? 0) === 1 ? "item" : "items"}
+                  {(data?.contents?.length ?? 0) === 1 ? " item" : " items"}
                 </p>
               </div>
             </div>
@@ -209,7 +216,7 @@ export const SharePage: React.FC = () => {
           {/* Search and Filter Bar */}
           <div className="mt-4 flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search shared content..."
@@ -248,14 +255,14 @@ export const SharePage: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {filteredContents.length === 0 ? (
           <div className="text-center py-16">
-            <Brain className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-xl text-gray-600 mb-2">
+            <Brain className="h-16 w-16 text-muted mx-auto mb-4" />
+            <p className="text-xl text-muted-foreground mb-2">
               {searchQuery
                 ? "No matching content found"
                 : "No content to display"}
             </p>
             {searchQuery && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Try adjusting your search query
               </p>
             )}
@@ -289,7 +296,7 @@ export const SharePage: React.FC = () => {
                         </Badge>
                       ))}
                     </div>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       {format(new Date(content.createdAt), "MM/dd/yyyy")}
                     </span>
                   </div>
@@ -301,15 +308,15 @@ export const SharePage: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-16">
+      <footer className="bg-card border-t border-border mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-sm text-gray-500">
+          <div className="text-center text-sm text-muted-foreground">
             <p>This is a read-only view of {data.username}'s shared content.</p>
             <p className="mt-2">
               Want to create your own Second Brain?{" "}
               <Link
                 to="/auth"
-                className="text-indigo-600 hover:text-indigo-700 font-medium"
+                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
               >
                 Get started here
               </Link>

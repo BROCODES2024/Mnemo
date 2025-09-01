@@ -20,6 +20,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
+import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { Brain } from "lucide-react";
 
 export const AuthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -72,110 +74,127 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Tabs
-        defaultValue="login"
-        className="w-[400px]"
-        onValueChange={handleTabChange}
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="signup">Sign Up</TabsTrigger>
-        </TabsList>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      {/* Theme Toggle - Positioned at top right */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
 
-        {/* Login Form */}
-        <TabsContent value="login">
-          <Card>
-            <form onSubmit={(e) => handleSubmit("login", e)}>
-              <CardHeader>
-                <CardTitle>Welcome Back</CardTitle>
-                <CardDescription>
-                  Enter your credentials to access your account.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-username">Username</Label>
-                  <Input
-                    id="login-username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="e.g. johndoe"
-                    required
-                    autoComplete="username"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                  />
-                </div>
-                {error && (
-                  <p className="text-sm font-medium text-red-500">{error}</p>
-                )}
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Log In"}
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
-        </TabsContent>
+      {/* Branding - Positioned at top left */}
+      <div className="absolute top-4 left-4 flex items-center gap-2">
+        <Brain className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+        <span className="font-bold text-lg text-foreground">Mnemo</span>
+      </div>
 
-        {/* Sign Up Form */}
-        <TabsContent value="signup">
-          <Card>
-            <form onSubmit={(e) => handleSubmit("signup", e)}>
-              <CardHeader>
-                <CardTitle>Create an Account</CardTitle>
-                <CardDescription>
-                  Enter a username and password to get started.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-username">Username</Label>
-                  <Input
-                    id="signup-username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Choose a username"
-                    required
-                    autoComplete="username"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Choose a strong password"
-                    required
-                    autoComplete="new-password"
-                  />
-                </div>
-                {error && (
-                  <p className="text-sm font-medium text-red-500">{error}</p>
-                )}
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating Account..." : "Sign Up"}
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <div className="w-full max-w-md px-4">
+        <Tabs
+          defaultValue="login"
+          className="w-full"
+          onValueChange={handleTabChange}
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          </TabsList>
+
+          {/* Login Form */}
+          <TabsContent value="login">
+            <Card>
+              <form onSubmit={(e) => handleSubmit("login", e)}>
+                <CardHeader>
+                  <CardTitle>Welcome Back</CardTitle>
+                  <CardDescription>
+                    Enter your credentials to access your account.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-username">Username</Label>
+                    <Input
+                      id="login-username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="e.g. johndoe"
+                      required
+                      autoComplete="username"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="login-password">Password</Label>
+                    <Input
+                      id="login-password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      autoComplete="current-password"
+                    />
+                  </div>
+                  {error && (
+                    <p className="text-sm font-medium text-red-500 dark:text-red-400">
+                      {error}
+                    </p>
+                  )}
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Logging in..." : "Log In"}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+
+          {/* Sign Up Form */}
+          <TabsContent value="signup">
+            <Card>
+              <form onSubmit={(e) => handleSubmit("signup", e)}>
+                <CardHeader>
+                  <CardTitle>Create an Account</CardTitle>
+                  <CardDescription>
+                    Enter a username and password to get started.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-username">Username</Label>
+                    <Input
+                      id="signup-username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Choose a username"
+                      required
+                      autoComplete="username"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Password</Label>
+                    <Input
+                      id="signup-password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Choose a strong password"
+                      required
+                      autoComplete="new-password"
+                    />
+                  </div>
+                  {error && (
+                    <p className="text-sm font-medium text-red-500 dark:text-red-400">
+                      {error}
+                    </p>
+                  )}
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Creating Account..." : "Sign Up"}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
