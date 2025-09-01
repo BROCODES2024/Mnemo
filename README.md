@@ -1,6 +1,6 @@
 # Mnemo
 
-Mnemo is a full-stack web application built with a **TypeScript + Node.js backend** and a **React (Vite) frontend**.
+Mnemo is a full-stack web application built with a **TypeScript + Node.js backend** and a **React (Vite) frontend**.  
 It helps users manage and share content securely with authentication and role-based access.
 
 🎥 **Demo Video Preview**
@@ -15,6 +15,7 @@ It helps users manage and share content securely with authentication and role-ba
 - 📦 Content management (add, view, share)
 - 🌐 Public & private routes with access control
 - 🎨 Modern UI powered by [shadcn/ui](https://ui.shadcn.com) & TailwindCSS
+- 🌙 Dark mode support for better accessibility
 - ⚡ Built with TypeScript for type safety
 
 ---
@@ -22,6 +23,7 @@ It helps users manage and share content securely with authentication and role-ba
 ## 📂 Project Structure
 
 ```
+
 Mnemo
 ├─ backend        # Node.js + Express + MongoDB (TypeScript)
 │  ├─ src         # Source code
@@ -35,6 +37,7 @@ Mnemo
 │  └─ vite.config.ts
 │
 └─ README.md
+
 ```
 
 ---
