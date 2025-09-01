@@ -48,10 +48,29 @@ export const SharePage: React.FC = () => {
 
       try {
         const response = await api.get(`/brain/${shareHash}`);
-        const brainData = response.data;
-        setData(brainData);
-        setFilteredContents(brainData.contents);
+
+        // Normalize common response shapes
+        let brainData: any = response.data;
+
+        // e.g. { brain: { username, contents } }
+        if (brainData.brain) {
+          brainData = brainData.brain;
+        }
+
+        // e.g. { content: [...] } -> normalize to contents
+        if (!brainData.contents && brainData.content) {
+          brainData.contents = brainData.content;
+        }
+
+        const normalized = {
+          username: brainData.username ?? "Unknown",
+          contents: Array.isArray(brainData.contents) ? brainData.contents : [],
+        };
+
+        setData(normalized);
+        setFilteredContents(normalized.contents);
       } catch (err: any) {
+        console.error("Failed to fetch shared brain:", err);
         if (err.response?.status === 404) {
           setError("This shared brain link is invalid or has expired.");
         } else {
@@ -120,9 +139,10 @@ export const SharePage: React.FC = () => {
   };
 
   // Get unique types from contents
-  const contentTypes = data
-    ? Array.from(new Set(data.contents.map((c) => c.type)))
-    : [];
+  const contentTypes =
+    data?.contents && data.contents.length > 0
+      ? Array.from(new Set(data.contents.map((c) => c.type)))
+      : [];
 
   if (isLoading) {
     return (
@@ -172,8 +192,8 @@ export const SharePage: React.FC = () => {
                   {data.username}'s Second Brain
                 </h1>
                 <p className="text-sm text-gray-500">
-                  {data.contents.length} shared{" "}
-                  {data.contents.length === 1 ? "item" : "items"}
+                  {data?.contents?.length ?? 0} shared
+                  {(data?.contents?.length ?? 0) === 1 ? "item" : "items"}
                 </p>
               </div>
             </div>

@@ -1,4 +1,3 @@
-// src/App.tsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { HomePage } from "./pages/HomePage";
@@ -12,18 +11,14 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          {/* Public share route - accessible to everyone */}
           <Route path="/brain/:shareHash" element={<SharePage />} />
 
-          {/* Public routes accessible only when logged out */}
           <Route element={<PublicRoute />}>
             <Route path="/auth" element={<AuthPage />} />
           </Route>
 
-          {/* Protected routes accessible only when logged in */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
-            {/* You can add more protected routes here */}
           </Route>
         </Routes>
       </BrowserRouter>

@@ -18,9 +18,7 @@ export const Sidebar: React.FC = () => {
     <div className="w-64 h-screen bg-gray-50 border-r border-gray-200 p-4">
       <div className="flex items-center gap-2 mb-8">
         <Brain className="h-8 w-8 text-indigo-600" />
-        <span className="text-xl font-semibold text-gray-800">
-          Second Brain
-        </span>
+        <span className="text-xl font-semibold text-gray-800">Mnemo</span>
       </div>
 
       <nav className="space-y-1">
