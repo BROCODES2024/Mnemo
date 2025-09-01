@@ -3,7 +3,9 @@
 Mnemo is a full-stack web application built with a **TypeScript + Node.js backend** and a **React (Vite) frontend**.
 It helps users manage and share content securely with authentication and role-based access.
 
-🎥 **Demo Video:** [Watch here](https://youtu.be/nCBQL174EmM)
+🎥 **Demo Video Preview**
+
+[![Watch the demo](https://img.youtube.com/vi/nCBQL174EmM/0.jpg)](https://youtu.be/nCBQL174EmM)
 
 ---
 
