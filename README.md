@@ -5,7 +5,7 @@ It helps users manage and share content securely with authentication and role-ba
 
 🎥 **Demo Video Preview**
 
-[![Watch the demo](https://img.youtube.com/vi/nCBQL174EmM/0.jpg)](https://youtu.be/nCBQL174EmM)
+[![Watch the demo](https://img.youtube.com/vi/rJnH4DUyceo/0.jpg)](https://youtu.be/rJnH4DUyceo)
 
 ---
 
