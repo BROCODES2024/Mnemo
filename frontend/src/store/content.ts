@@ -7,6 +7,7 @@ export interface Content {
   body: string | string[];
   type: string;
   tags: string[];
+  link?: string; // Added optional link field
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -147,7 +148,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
 
   clearError: () => set({ error: null }),
 
-  // Helper function
+  // Helper function - updated to include link in search
   filterAndSearch: (contents: Content[], type?: string, query?: string) => {
     const currentType = type ?? get().selectedType;
     const currentQuery = query ?? get().searchQuery;
@@ -161,7 +162,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
       );
     }
 
-    // Search
+    // Search - now includes link field
     if (currentQuery) {
       const lowerQuery = currentQuery.toLowerCase();
       filtered = filtered.filter(
@@ -170,7 +171,8 @@ export const useContentStore = create<ContentState>((set, get) => ({
           (typeof c.body === "string" ? c.body : c.body.join(" "))
             .toLowerCase()
             .includes(lowerQuery) ||
-          c.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
+          c.tags.some((tag) => tag.toLowerCase().includes(lowerQuery)) ||
+          (c.link && c.link.toLowerCase().includes(lowerQuery))
       );
     }
 

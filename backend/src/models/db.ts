@@ -1,7 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 import { env } from "../config/env.js";
 
-// ... (connectDB and UserSchema remain the same) ...
 export const connectDB = async () => {
   try {
     await mongoose.connect(env.DB_URL);
@@ -17,19 +16,19 @@ const UserSchema = new Schema({
   password: { type: String, required: true, select: false },
 });
 
-// UPDATE THIS SCHEMA
+// UPDATED SCHEMA - Added link field
 const ContentSchema = new Schema(
   {
     title: { type: String, required: true },
     body: { type: Schema.Types.Mixed, required: true }, // Can be a string or array of strings
     type: { type: String, required: true }, // e.g., 'Project Ideas', 'Tweet', 'Article'
-    tags: [{ type: String }], // Simplified to an array of strings
+    tags: [{ type: String }], // Array of strings
+    link: { type: String, required: false }, // Optional URL field
     userId: { type: mongoose.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
-); // Add timestamps for sorting
+);
 
-// ... (LinkShare schema remains the same) ...
 const LinkShare = new Schema({
   hash: String,
   userId: {

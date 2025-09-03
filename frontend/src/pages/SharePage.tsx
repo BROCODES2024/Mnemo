@@ -3,26 +3,21 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Brain, Loader2, Home, AlertCircle, Search } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { ContentCard } from "../components/ContentCard";
 import api from "../lib/api";
-import { format } from "date-fns";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
 
+// Updated interface to include link field
 interface SharedContent {
   _id: string;
   title: string;
   body: string | string[];
   type: string;
   tags: string[];
+  link?: string; // Added link field
   createdAt: string;
+  updatedAt: string;
 }
 
 interface SharedBrainData {
@@ -96,7 +91,7 @@ export const SharePage: React.FC = () => {
       );
     }
 
-    // Search
+    // Search - now includes link field
     if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -105,7 +100,8 @@ export const SharePage: React.FC = () => {
           (typeof c.body === "string" ? c.body : c.body.join(" "))
             .toLowerCase()
             .includes(lowerQuery) ||
-          c.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
+          c.tags.some((tag) => tag.toLowerCase().includes(lowerQuery)) ||
+          (c.link && c.link.toLowerCase().includes(lowerQuery))
       );
     }
 
@@ -116,28 +112,13 @@ export const SharePage: React.FC = () => {
     setSearchQuery(e.target.value);
   };
 
-  const renderBody = (content: SharedContent) => {
-    if (typeof content.body === "string") {
-      return (
-        <p className="text-muted-foreground line-clamp-3">{content.body}</p>
-      );
-    } else if (Array.isArray(content.body)) {
-      return (
-        <ul className="list-disc list-inside text-muted-foreground space-y-1">
-          {content.body.slice(0, 3).map((item, idx) => (
-            <li key={idx} className="line-clamp-1">
-              {item}
-            </li>
-          ))}
-          {content.body.length > 3 && (
-            <li className="text-muted">
-              ...and {content.body.length - 3} more
-            </li>
-          )}
-        </ul>
-      );
-    }
-    return null;
+  // Dummy handlers for ContentCard (share page is read-only)
+  const handleDelete = () => {
+    // No-op for share page - content is read-only
+  };
+
+  const handleShare = () => {
+    // No-op for share page - already shared
   };
 
   // Get unique types from contents
@@ -270,38 +251,12 @@ export const SharePage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredContents.map((content) => (
-              <Card
+              <ContentCard
                 key={content._id}
-                className="hover:shadow-lg transition-shadow"
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <Badge variant="secondary" className="text-xs">
-                      {content.type}
-                    </Badge>
-                  </div>
-                  <CardTitle className="text-lg mt-2">
-                    {content.title}
-                  </CardTitle>
-                </CardHeader>
-
-                <CardContent>{renderBody(content)}</CardContent>
-
-                <CardFooter className="pt-3">
-                  <div className="flex flex-wrap gap-2 items-center justify-between w-full">
-                    <div className="flex flex-wrap gap-1">
-                      {content.tags.map((tag, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs">
-                          #{tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {format(new Date(content.createdAt), "MM/dd/yyyy")}
-                    </span>
-                  </div>
-                </CardFooter>
-              </Card>
+                content={content as any} // Cast to match ContentCard interface
+                onDelete={handleDelete}
+                onShare={handleShare}
+              />
             ))}
           </div>
         )}

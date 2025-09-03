@@ -3,23 +3,30 @@ import { z } from "zod";
 import { ContentModel, LinkModel, UserModel } from "../models/db.js";
 import { random } from "../utils/random.js";
 
-// UPDATED schema for adding content
+// URL validation helper
+const urlSchema = z.string().url().optional().or(z.literal(""));
+
+// UPDATED schema for adding content with link field
 const addContentSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.union([z.string(), z.array(z.string())]),
   type: z.string().min(1, "Type is required"),
   tags: z.array(z.string()).optional(),
+  link: urlSchema, // Optional URL field
 });
 
 export const addContent = async (req: Request, res: Response) => {
-  const { title, body, type, tags } = addContentSchema.parse(req.body);
+  const { title, body, type, tags, link } = addContentSchema.parse(req.body);
+
   const newContent = await ContentModel.create({
     title,
     body,
     type,
     tags,
+    link: link || undefined, // Only save if link is provided and not empty
     userId: req.userId,
   });
+
   res.status(201).json({ msg: "Content added", content: newContent });
 };
 
@@ -31,9 +38,8 @@ export const getContent = async (req: Request, res: Response) => {
   res.status(200).json({ content });
 };
 
-// UPDATED to get contentId from params
 export const deleteContent = async (req: Request, res: Response) => {
-  const { contentId } = req.params; // Get ID from URL parameters
+  const { contentId } = req.params;
   const result = await ContentModel.deleteOne({
     _id: contentId,
     userId: req.userId,
@@ -46,8 +52,8 @@ export const deleteContent = async (req: Request, res: Response) => {
   res.status(200).json({ msg: "Content deleted" });
 };
 
-// ... (manageShareLink and getPublicContent remain the same) ...
 const shareContentSchema = z.object({ share: z.boolean() });
+
 export const manageShareLink = async (req: Request, res: Response) => {
   const { share } = shareContentSchema.parse(req.body);
   const userId = req.userId;

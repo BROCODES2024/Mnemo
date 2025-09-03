@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { X } from "lucide-react";
+import { X, Link2 } from "lucide-react";
 import { useContentStore } from "../store/content";
 import { toast } from "sonner";
 
@@ -50,10 +50,38 @@ export const AddContentDialog: React.FC<AddContentDialogProps> = ({
     body: "",
     type: "",
     tags: [] as string[],
+    link: "", // Added link field
     isListFormat: false,
   });
 
   const [tagInput, setTagInput] = useState("");
+
+  // Auto-detect content type based on link
+  const handleLinkChange = (linkValue: string) => {
+    setFormData({ ...formData, link: linkValue });
+
+    // Auto-suggest content type based on URL
+    if (linkValue && !formData.type) {
+      if (linkValue.includes("youtube.com") || linkValue.includes("youtu.be")) {
+        setFormData((prev) => ({ ...prev, type: "Video", link: linkValue }));
+      } else if (linkValue.includes("x.com")) {
+        setFormData((prev) => ({ ...prev, type: "Tweet", link: linkValue }));
+      } else {
+        setFormData((prev) => ({ ...prev, type: "Link", link: linkValue }));
+      }
+    }
+  };
+
+  // Validate URL format
+  const isValidUrl = (string: string) => {
+    if (!string) return true; // Empty is valid (optional field)
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && tagInput.trim()) {
@@ -80,6 +108,12 @@ export const AddContentDialog: React.FC<AddContentDialogProps> = ({
       return;
     }
 
+    // Validate URL if provided
+    if (formData.link && !isValidUrl(formData.link)) {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const bodyContent = formData.isListFormat
@@ -91,6 +125,7 @@ export const AddContentDialog: React.FC<AddContentDialogProps> = ({
         body: bodyContent,
         type: formData.type,
         tags: formData.tags,
+        link: formData.link || undefined, // Only send if not empty
       });
 
       toast.success("Content added successfully!");
@@ -102,6 +137,7 @@ export const AddContentDialog: React.FC<AddContentDialogProps> = ({
         body: "",
         type: "",
         tags: [],
+        link: "",
         isListFormat: false,
       });
     } catch (error) {
@@ -156,6 +192,25 @@ export const AddContentDialog: React.FC<AddContentDialogProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* NEW LINK FIELD */}
+            <div className="grid gap-2">
+              <Label htmlFor="link" className="flex items-center gap-2">
+                <Link2 className="h-4 w-4" />
+                Link (Optional)
+              </Label>
+              <Input
+                id="link"
+                type="url"
+                value={formData.link}
+                onChange={(e) => handleLinkChange(e.target.value)}
+                placeholder="https://example.com"
+                className={!isValidUrl(formData.link) ? "border-red-500" : ""}
+              />
+              {formData.link && !isValidUrl(formData.link) && (
+                <p className="text-sm text-red-500">Please enter a valid URL</p>
+              )}
             </div>
 
             <div className="grid gap-2">
